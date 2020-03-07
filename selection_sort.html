@@ -1,0 +1,29 @@
+<html>
+<head>
+    
+    <title></title>
+    <script>
+        var selection_sort = function(array) {
+            var length = array.length;
+            var maxIndex, temp, i, j;
+            for(i = 0; i <length; i++) {
+                maxIndex = length - i - 1;
+                for(j = 0; j < length - i - 1; j++) {
+                    if (array[j] > array[maxIndex]){
+                        maxIndex = j;
+                    }
+                }
+                if(maxIndex !== i){
+                    temp = array[maxIndex];
+                    array[maxIndex] = array[length-i-1];
+                    array[length-i-1] = temp;
+                }                
+            }
+            return array;
+        }
+        alert(selection_sort([10,2,3,4,13,30,29]));     
+    </script>
+</head>
+<body>
+</body>
+</html>

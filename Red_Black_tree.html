@@ -1,0 +1,564 @@
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <title></title>
+    <script>
+        var Node = function(data) {
+            this.data = data;
+            this.parent = null;
+            this.left = null;
+            this.right = null;
+            this.color = 'R';
+            this.depth = 0;
+            this.uncle_node = null;
+
+            Node.prototype.getUncle = function() {
+                
+                if (this.parent.parent == null){
+                    return null;
+                }
+
+                if(this.parent == this.parent.parent.left) {
+                    return this.parent.parent.right;
+                }
+                else {
+                    return this.parent.parent.left;
+                }
+            }
+
+            Node.prototype.getSibling = function() {
+                if(this == this.parent.left) {
+                    return this.parent.right;
+                }
+                else {
+                    return this.parent.left;
+                }
+            }
+
+            return this;
+        }
+
+        var RedBlackTree = function() {
+
+            this.root;
+            this.sorted_arr = '';
+            this.depth = 0;
+
+            RedBlackTree.prototype.inorder = function(node) {
+                if(node.left != null) {
+                    this.inorder(node.left);
+                }
+                this.sorted_arr += node.data + ' ';
+                if(node.right != null) {
+                    this.inorder(node.right);
+                }
+            }
+
+            RedBlackTree.prototype.find = function(data) {
+                let current = this.root;
+                while(current.data != data) {
+                    if(data < current.data) {
+                        current = current.left;
+                    } else {
+                        current = current.right;
+                    }
+                    if(current == null) {
+                        return null;
+                    }
+                }
+                return current;
+            }
+
+
+            RedBlackTree.prototype.insert = function(data) {
+                var newNode = new Node(data);
+                if(this.root == null) {
+                    this.root = newNode;
+                    this.root.color = 'B';
+                }
+                else {
+                    this.insertNode(this.root, newNode);
+                }
+            }
+
+            RedBlackTree.prototype.insertNode = function(node, newNode) {
+                
+                if(newNode.data < node.data) {
+                    if(node.left == null) {  
+
+                        newNode.parent = node;
+                        node.left = newNode;
+                        
+                        newNode.depth = newNode.parent.depth + 1;
+
+                        if(node.color == 'R') 
+                        {  // 부모의 컬러가 레드면
+
+                            var uncle_node = newNode.getUncle();
+                            if (uncle_node == null){  // 삼촌이 없을 때
+                                if(node.data < node.parent.data) { // p가 g보다 작을 때  
+                                    this.right_rotate(node.parent);
+
+                                    node.color = 'B';
+                                    node.left.color = 'R';
+                                    node.right.color = 'R';
+                                }
+                                else {
+                                    this.right_rotate(node);
+                                    this.left_rotate(newNode.parent);
+
+                                    newNode.color = 'B';
+                                    newNode.left.color = 'R';
+                                    newNode.right.color = 'R';
+                                }
+                            }
+                            else{
+                                if(uncle_node.color == 'R') { // 삼촌이 레드일 때
+                                    node.color = 'B';
+                                    uncle_node.color = 'B';
+                                    if(node.parent == this.root) {
+                                        node.parent.color = 'B';
+                                    }
+                                    else {
+                                        node.parent.color = 'R';
+                                    }
+                                }
+                                else {  // 삼촌이 블랙일 때
+                                    if(node.parent.data < node.data) {  // p가 오른쪽 자식
+                                        if(newNode.data > node.data) {  // n이 오른쪽 자식
+                                            this.left_rotate(node.parent);
+                                            node.color = 'B';
+                                            node.parent.color = 'R';
+                                        }
+                                        else {  // n이 왼쪽 자식
+                                            this.right_rotate(node);
+                                            this.left_rotate(node.parent);
+                                            newNode.color = 'B';
+                                            node.parent.color = 'R';
+                                        }
+                                    }
+                                    else {  // p가 왼쪽 자식
+                                        if(newNode.data > node.data) { // n이 오른쪽 자식
+                                            this.left_rotate(node);
+                                            this.right_rotate(node.parent);
+                                            newNode.color = 'B';
+                                            node.parent.color = 'R';
+                                        }
+                                        else {  // n이 왼쪽 자식
+                                            this.right_rotate(node.parent);
+                                            node.color = 'B';
+                                            node.parent.color = 'R';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        return this.insertNode(node.left, newNode);
+                    }
+                }
+                else {
+                    if(node.right == null) {
+                        node.right = newNode;
+                        newNode.parent = node;
+
+                        newNode.depth = newNode.parent.depth + 1;
+
+                        if(node.color == 'R') {
+
+                            uncle_node = newNode.getUncle();
+                            if (uncle_node == null){  // 삼촌이 없을 때
+                                if(node.data < node.parent.data) { // p가 g보다 작을 때  
+                                    this.left_rotate(node);
+                                    this.right_rotate(newNode.parent);
+
+                                    newNode.color = 'B';
+                                    newNode.left.color = 'R';
+                                    newNode.right.color = 'R';
+
+                                }
+                                else {
+                                    this.left_rotate(node.parent);
+
+                                    node.color = 'B';
+                                    node.left.color = 'R';
+                                    node.right.color = 'R';
+                                }
+                            }
+                            else{
+                                if(uncle_node.color == 'R') { // 삼촌이 레드일 때
+
+                                    node.color = 'B';
+                                    uncle_node.color = 'B';
+                                    if(node.parent = this.root) {
+                                        node.parent.color = 'B';
+                                    }
+                                    else {
+                                        node.parent.color = 'R';
+                                    }
+                                }
+                                else {  // 삼촌이 블랙일 때
+                                    if(node.parent.data < node.data) {  // p가 오른쪽 자식
+                                        if(newNode.data > node.data) {  // n이 오른쪽 자식
+                                            this.left_rotate(node.parent);
+                                            node.color = 'B';
+                                            node.parent.color = 'R';
+                                        }
+                                        else {  // n이 왼쪽 자식
+                                            
+                                            this.right_rotate(node);
+                                            this.left_rotate(node.parent);
+                                            node.color = 'B';
+                                            node.parent.color = 'R';
+                                        }
+                                    }
+                                    else {  // p가 왼쪽 자식
+                                        if(newNode.data > node.data) { // n이 오른쪽 자식
+                                            this.left_rotate(node);
+                                            this.right_rotate(node.parent);
+                                            node.color = 'B';
+                                            node.parent.color = 'R';
+                                        }
+                                        else {  // n이 왼쪽 자식
+                                            this.right_rotate(node.parent);
+                                            node.color = 'B';
+                                            node.parent.color = 'R';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        return this.insertNode(node.right, newNode);
+                    }
+                }
+            }
+
+            RedBlackTree.prototype.delete = function(data) {
+                this.deleteNode(this.root, data);
+            }
+
+            RedBlackTree.prototype.deleteNode = function(node, data) {
+
+                if(data == node.data) {
+                    
+                    if (node.color == 'B') {  // 삭제하려는 노드의 색이 검은색
+                        var x = this.getSmallest(node.right);
+                        var sibling_node = node.getSibling();
+
+                        if(x == null) {
+                            if(node.left == null) {
+                                this.left_rotate(node.parent);
+                                node.parent.color = 'R';
+                                node.left.color = 'B';
+                                if(sibling_node == this.root) {
+                                    sibling_node.color = 'B';
+                                }
+                            }
+                            else {
+                                var temp = node.data;
+                                node.data = node.left.data;
+                                node.left.color = 'B';
+                                temp = null;
+                                
+                            }
+
+                        }
+
+                        else{
+
+                            if(x.color == 'R') {  // X가 빨간색
+                                node.data = x.data;
+                                x.color = 'B';
+
+                                this.deleteNode(node.right, x.data);
+                            }
+                            else {  // X가 검은색
+                                if(node.parent.color == 'R') {  // P가 빨간색
+                                    if(sibling_node.left.color == 'B' && sibling_node.right.color == 'B') {  // case 3-1-1
+                                        node.parent.color = 'B';
+                                        sibling_node.color = 'R';
+                                    }
+                                    else if(sibling_node.right.color == 'R') {  // case 3-1-2
+                                        this.left_rotate(node.parent);
+                                        node.parent.color = 'B';
+                                        sibling_node.color = 'R';
+                                        sibling_node.right.color = 'B';
+                                    }
+                                    else {
+                                        this.right_rotate(sibling_node);
+                                        sibling_node.color = 'R';
+                                        sibling_node.left.color = 'B';
+                                        this.left_rotate(node.parent);
+                                        node.parent.color = 'B';
+                                    }
+                                }
+                                else {  // P가 검은색
+                                    if(sibling_node.color == 'B' && sibling_node.left.color == 'B' && sibling_node.right.color == 'B') {  // case 3-2-1
+                                        sibling_node.color = 'R';
+                                        
+                                        var tmp_node = x.parent.getSibling();
+                                        while (tmp_node != null){
+                                            tmp_node.color = 'R';
+                                            
+                                            tmp_node = tmp_node.parent.getSibling();
+                                        }
+                                    }
+                                    else if(sibling_node.color == 'B' && sibling_node.right.color == 'R') {  // case 3-2-2
+                                        this.left_rotate(node.parent);
+                                        sibling_node.right.color = 'B';
+                                    }
+                                    else if(sibling_node.color == 'B' && sibling_node.left.color == 'R' && sibling_node.right.color == 'B') {  // case 3-2-3
+                                        this.right_rotate(sibling_node);
+                                        sibling_node.color = 'R';
+                                        sibling_node.left.color = 'B';
+                                        this.left_rotate(node.parent);
+                                        sibling_node.color = 'B';
+                                    }
+                                    else {  // case 3-2-4
+                                        this.left_rotate(node.parent);
+                                        node.parent.color = 'R';
+                                        sibling_node.color = 'B';
+                                        if(sibling_node.left.left.color == 'B' && sibling_node.left.right.color == 'B') {  // case 3-2-4-1
+                                            node.parent.color = 'B';
+                                            sibling_node.left.color = 'R';
+                                        }
+                                        else if(sibling_node.left.right.color == 'R') {  // case 3-2-4-2
+                                            this.left_rotate(node.parent);
+                                            node.parent.color = 'B';
+                                            sibling_node.left.color = 'R';
+                                            sibling_node.left.right.color = 'B';
+                                        }
+                                        else {  // case 3-2-4-3
+                                            this.right_rotate(sibling_node.left);
+                                            sibling_node.left.color = 'R';
+                                            sibling_node.left.left.color = 'B';
+                                            this.left_rotate(node.parent);
+                                            node.parent.color = 'B';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if(node.left == null && node.right == null) {  // 자식이 없을 때
+                        
+                        if (node.data == node.parent.left.data){
+                            node.parent.left = null;
+                        }
+                        
+                        else{
+                            node.parent.right = null;
+                        }
+                        node = null;
+                    }   
+                    else if(node.left == null) {  // 자식이 1개일 때
+
+                        node.data = node.right.data;
+                        node.color = node.right.color;
+                        node.right = null;
+                    }
+                    else if(node.right == null) {
+
+                        node.data = node.left.data;
+                        node.color = node.left.color;
+                        node.left = null;
+                    }
+
+                    else{
+                        var temp = this.getSmallest(node.right);  // 자식이 2개일 때
+                    
+                        node.data = temp.data;
+                        node.color = temp.color;
+
+                        //this.deleteNode(node.right, temp.data);
+                    }
+
+                    
+                }
+
+                else if(data < node.data) {
+                    this.deleteNode(node.left, data);
+                }
+
+                else {
+                    this.deleteNode(node.right, data);
+                }
+            } 
+            
+            RedBlackTree.prototype.getSmallest = function(node){
+
+                var current = node;
+
+                if (current == null){
+                    return current;
+                }
+
+                while(!(current.left == null)) {
+                    current = current.left;
+                }
+                return current;
+            }
+
+            RedBlackTree.prototype.left_rotate = function(x) {
+            var y = x.right;
+
+            x.right = y.left;
+            if(y.left != null) {
+                y.left.parent = x;
+            }
+            y.parent = x.parent;
+            if(x.parent == null) {
+                this.root = y;
+            }
+            else if(x == x.parent.left) {
+                x.parent.left = y;
+            }
+            else{
+                x.parent.right = y;
+            }
+            y.left = x;
+            x.parent = y;
+            this.calcDepth(y);
+            }
+
+            RedBlackTree.prototype.right_rotate = function(x) {
+                y = x.left;
+
+                x.left = y.right;
+                if(y.right != null) {
+                y.right.parent = x;
+                }
+                
+                y.parent = x.parent;
+                if(x.parent == null) {
+                    this.root = y;
+                }
+                else if(x == x.parent.right) {
+                    x.parent.right = y;
+                }
+                else {
+                    x.parent.left = y;
+                }
+
+                y.right = x;
+                x.parent = y;
+            
+                this.calcDepth(y);
+            }
+
+            RedBlackTree.prototype.calcDepth = function(node) {
+
+                if (node != null){
+
+                    if (node.parent != null){
+                        node.depth = node.parent.depth + 1;
+                        if (node.depth > this.depth){
+                            this.depth = node.depth;
+                        }
+                    }
+                    else{
+                        node.depth = 0;
+                    }
+                    
+                    if (node.left != null){
+                        this.calcDepth(node.left);
+                    }
+
+                    if (node.right != null){
+                        this.calcDepth(node.right);
+                    }
+
+                }
+            }
+
+            RedBlackTree.prototype.getRootNode = function() {
+                return this.root;
+            }
+
+            RedBlackTree.prototype.printHelper = function(node, arr){
+                
+                if (node.left != null){
+                    this.printHelper(node.left, arr);
+                }
+                for (var i = 0; i <= this.depth; i++){
+                    if (i == node.depth){
+                        var tmp = ['(','','','',')'];
+                        tmp[1] = String(parseInt(node.data / 10));
+                        tmp[2] = String(node.data % 10);
+                        tmp[3] = node.color;
+
+                        for (var j = 0; j < 5; j++){
+                            arr[i] += tmp[j];
+                        }
+                    }
+                    else{
+                        arr[i] += '     ';
+                    }
+                }
+                if (node.right != null){
+                    this.printHelper(node.right, arr);
+                }
+            }
+
+            RedBlackTree.prototype.print = function() {
+
+                var arr = new Array(this.depth + 1);
+                for (var i = 0; i < arr.length; i++){
+                    arr[i] = '';
+                }
+                this.printHelper(this.root,arr);
+
+                var output = '';
+                for (i = 0; i < arr.length; i++){
+                    output += arr[i] + '\n';
+                }
+
+                return output;
+            }
+
+            return this;
+        }
+
+        var rbt = new RedBlackTree();
+
+        rbt.insert(14);
+        rbt.insert(15);
+        rbt.insert(6);
+        rbt.insert(34);
+        rbt.insert(24);
+        rbt.insert(12);
+        rbt.insert(2);
+        rbt.insert(44);
+        rbt.insert(37);
+        rbt.insert(5);
+        rbt.insert(10);
+        rbt.insert(13);
+        rbt.insert(7);
+        rbt.insert(30);
+        rbt.insert(45);
+        
+
+        
+
+        
+
+        //rbt.delete(14);
+
+        document.write(rbt.print());
+
+        //rbt.inorder(rbt.root);
+
+        //alert(rbt.sorted_arr);
+
+        
+
+    </script>
+</head>
+<body>
+</body>
+</html>

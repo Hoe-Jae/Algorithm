@@ -1,0 +1,228 @@
+<html>
+<head>
+    
+    <title></title>
+    <script>
+
+        // random 배열 생성
+        function randomArray (num) {
+            var rand = [];
+            var i, temp, num, rnum;
+            for(i=1; i<=num; i++) {
+                rand.push(i);
+            }
+            
+            for(i = 0; i < num; i++) { 
+                rnum = Math.floor(Math.random()*num);
+
+                temp = rand[i];
+                rand[i] = rand[rnum];
+                rand[rnum] = temp;
+            }
+            return rand;
+        }
+
+        // Quick Sort
+        var partition = function(array, left, right, pivotIndex) { // 정렬
+            var temp;
+            var pivot = array[pivotIndex];
+            while (left <= right) {  // 왼쪽, 오른쪽 수를 규칙과 비교해 다음 수로 넘어간다.
+                while (array[left] < pivot) {
+                    left++;
+                }
+                while (array[right] > pivot) {
+                    right--;
+                }
+                if (left <= right) {  // 왼쪽이 기준보다 크고, 오른쪽이 기준보다 작으면  
+                    temp = array[left];
+                    array[left] = array[right];
+                    array[right] = temp;  // 서로 바꿔준다.
+                    left++;
+                    right--;
+                }
+            }
+            temp = array[left];
+            array[left] = array[pivotIndex];
+            array[pivotIndex] = temp;  // 마지막으로 기준과 만난 수를 바꾼다. 기준의 위치는 이제 i 
+            return left;
+        }
+
+        var Quick_Sort = function(array,left,right) {  // 재귀
+            if(!left) {  // left에 값이 없는 경우 0 으로 초기화
+                left = 0;
+            }
+            if(!right) {
+                right = array.length -1;
+            }
+            var pivotIndex = right;  // 배열 가장 오른쪽의 수를 기준으로 뽑는다.
+            pivotIndex = partition(array, left, right - 1, pivotIndex);  // right - 1 의 이유는 기준(현재 right)를 제외하고 정렬하기 위해서
+            if (left < pivotIndex - 1) {
+                Quick_Sort(array, left, pivotIndex-1);  // 가장 왼쪽 부분 재귀
+            }
+            if (pivotIndex + 1 < right) {
+                Quick_Sort(array, pivotIndex + 1, right);  // 가장 오른쪽 부분 재귀
+            }
+            return array;
+        }
+
+        
+        // Heap Sort
+        var Heap = (function() {
+            function Heap() {
+                this.arr = [];
+            }
+            function HeapUp(self, idx) {
+                if (idx) {
+                    var parent = parseInt((idx - 1)/2);
+                    if (self.arr[idx] > self.arr[parent]) {  // 자식 노드가 부모 노드보다 크면
+                        var temp = self.arr[idx];            // 서로 바꿔준다.
+                        self.arr[idx] = self.arr[parent];
+                        self.arr[parent] = temp;
+                        HeapUp(self, parent);
+                    }
+                }
+            }
+            function HeapDown(self, idx) {
+                var left = 0;
+                var right = 0;
+                var large;
+                if(idx * 2 + 1 < self.arr.length ) {
+                    left = self.arr[idx * 2 + 1];
+                    if (idx * 2 + 2 < self.arr.length ) {
+                        right = self.arr[idx * 2 + 2];
+                    }
+                    if (left > right) {
+                        large = idx * 2 + 1;
+                    }
+                    else {
+                        large = idx * 2 + 2;
+                    }
+
+                    if (self.arr[idx] < self.arr[large]) {
+                        var temp = self.arr[idx];
+                        self.arr[idx] = self.arr[large];
+                        self.arr[large] = temp;
+                        HeapDown(self, large);
+                    }
+                }
+            }
+
+            function SetArray(self, arr){
+                for(i=0; i<arr.length;i++){
+                    self.insert(arr[i]);
+                }
+            }
+            
+            Heap.prototype.insert = function(number) {
+                var last = this.arr.length;
+                this.arr[last] = number;
+                HeapUp(this, last);
+                return true;
+            }
+            Heap.prototype.delete = function() {
+                if (this.arr.length == 0) {
+                    return false;
+                }
+                var del = this.arr[0];
+                this.arr[0] = this.arr.pop();
+                HeapDown(this,0);
+                return del;
+            }
+            Heap.prototype.sort = function() {
+
+                var sort = [];
+                var count = this.arr.length;
+                for (var i = 0; i < count; i++) {
+                    sort.push(this.delete());
+                    
+                }
+                return sort;
+            }
+            return Heap;
+
+        })();
+
+        var h = new Heap();
+
+
+        // Radix Sort
+        var counter = [[]];
+        
+        var radixSort = function (array, d) {  // d : 가장 큰 데이터의 자릿수
+            var mod = 10;
+            for (var i = 0; i < d; i++, mod *= 10) {  // mod는 현재 정렬 중인 자릿수
+                for (var j = 0; j < array.length; j++) {
+                    var bucket = array[j] % mod;
+                    if (counter[bucket] == null) {
+                        counter[bucket] = [];
+                    }
+                    counter[bucket].push(array[j]); // 나머지 별로 묶는다.
+                }
+                var pos = 0;
+                for (var j = 0; j < counter.length; j++) {  // counter에 저장된 묶음들(나머지 순서로 정렬됨)을 실제 배열에 반영
+                    var value = null;
+                    if (counter[j] != null) {
+                        while ((value = counter[j].shift()) != null) {
+                            array[pos++] = value;
+                        }
+                    }
+                }
+            }
+            return array;
+        }
+
+        //Counting Sort
+        var Counting_Sort = function(array, k) {
+            var count = [], result = [];
+            for (var i = 0; i <= k; i++) {   // 모든 숫자의 갯수를 0으로 초기화
+                count[i] = 0;
+            }
+            for (var j = 0; j < array.length; j++) {  // 숫자의 갯수를 세어 저장
+                count[array[j]] += 1;
+            }
+            for (i = 0; i < k; i++) {  // 누적합을 구한다.
+                count[i+1] += count[i];
+            }
+            for (j = 0; j < array.length; j++) {  // 누적합이 가리키는 인덱스를 바탕으로 결과에 숫자를 집어넣는다.
+                
+                result[count[array[j]] - 1] = array[j];  
+                count[array[j]] -= 1;
+            }
+            return result;
+        }
+
+        var arr = randomArray(10000);
+
+        var startTime = new Date().getTime();
+        var quick_arr = Quick_Sort(arr.slice());
+        var endTime = new Date().getTime();
+        var quick_avg_time = endTime - startTime;
+        
+        for(i=0;i<10000;i++){
+            h.insert(arr[i]);
+        }
+        var startTime = new Date().getTime();
+        var heap_arr = h.sort();
+        var endTime = new Date().getTime();
+        var heap_avg_time = endTime - startTime;
+
+        var startTime = new Date().getTime();
+        var radix_arr = radixSort(arr.slice(),4);
+        var endTime = new Date().getTime();
+        var radix_avg_time = endTime - startTime;
+
+        var startTime = new Date().getTime();
+        var counting_arr = Counting_Sort(arr.slice(),9999);
+        var endTime = new Date().getTime();
+        var counting_avg_time = endTime - startTime;
+
+        alert("Quick_avg_time : " + (quick_avg_time/1000.0) +'\n' + 
+            "Heap_avg_time : " + (heap_avg_time/1000.0) + '\n' + 
+            "Radix_avg_time : " + (radix_avg_time/1000.0) + '\n' + 
+            "Counting_avg_time : " + (counting_avg_time/1000.0) + '\n');
+
+    </script>
+</head>
+<body>
+</body>
+</html>

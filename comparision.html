@@ -1,0 +1,192 @@
+<html>
+<head>
+    
+    <title></title>
+    <script>
+
+        function randomArray (num) {
+            var thous = [];
+            var i, temp, num, rnum;
+            for(i=1; i<=num; i++) {
+                thous.push(i);
+            }
+            
+            for(i = 0; i < num; i++) { 
+                rnum = Math.floor(Math.random()*num);
+
+                temp = thous[i];
+                thous[i] = thous[rnum];
+                thous[rnum] = temp;
+            }
+            return thous;
+        }
+
+        var selection_sort = function(array) {
+            var length = array.length;
+            var maxIndex, temp, i, j;
+            for(i = 0; i <length; i++) {
+                maxIndex = length - i - 1;
+                for(j = 0; j < length - i - 1; j++) {
+                    if (array[j] > array[maxIndex]){
+                        maxIndex = j;
+                    }
+                }
+                if(maxIndex !== i){
+                    temp = array[maxIndex];
+                    array[maxIndex] = array[length-i-1];
+                    array[length-i-1] = temp;
+                }                
+            }
+            return array;
+        }
+
+        var bubble_sort = function(array) {
+            var length = array.length;
+            var i, j, temp;
+            for (i=0; i < length-1; i++) {
+                var sorted = true;
+                for( j=0; j < length-1-i; j++) {
+                    if(array[j] > array[j+1]) { // 두 수를 비교하여 앞의 수가 뒤의 수보다 크면
+                        temp = array[j];        // 두 수를 서로 바꾼다.
+                        array[j] = array[j+1];
+                        array[j+1] = temp;
+                        sorted = false
+                    }
+                }
+                if (sorted){
+                    break;
+                }
+            }
+            return array;
+        }
+
+        var insertion_sort = function(array) {
+            var i, j ,temp;
+            for (i = 1; i < array.length; i++) {
+                temp = array[i];
+                for (j = i-1; j >= 0 && temp < array[j]; j--) {
+                    array[j+1] = array[j];
+                }
+                array[j+1] = temp;
+            }
+            return array;
+        }
+
+        var merge_sort = function(array) {
+            if (array.length < 2) {
+                return array;
+            }
+            var pivot = Math.floor(array.length/2); // 대략 반으로 나눈다.
+            var left = array.slice(0,pivot); // 왼쪽 분할 리스트
+            var right = array.slice(pivot,array.length); // 오른쪽 분할 리스트
+            return merge(merge_sort(left), merge_sort(right));
+        }
+        function merge(left,right) {
+            var result = [];
+            while (left.length && right.length) {
+                if (left[0] <= right[0]) {  // 두 배열의 첫 원소를 비교
+                    result.push(left.shift());  // 더 작은 수를 결과에 넣는다.
+                }
+                else {
+                    result.push(right.shift());
+                }
+            }
+            while (left.length) {
+                result.push(left.shift()); // 어느 한 배열이 더 많이 남았다면 나머지를 다 넣는다.
+            }
+            while (right.length) {
+                result.push(right.shift());
+            }
+            return result;
+        }
+
+        var arr = randomArray(10000);
+        
+        var startTime = new Date().getTime();
+        var selection_arr = selection_sort(arr.slice());
+        var endTime = new Date().getTime();
+        var selection_avg_time = endTime - startTime;
+
+        startTime = new Date().getTime();
+        var bubble_arr = bubble_sort(arr.slice());
+        endTime = new Date().getTime();
+        var bubble_avg_time = endTime - startTime;
+
+        startTime = new Date().getTime();
+        var insertion_arr = insertion_sort(arr.slice());
+        endTime = new Date().getTime();
+        var insertion_avg_time = endTime - startTime;
+
+        startTime = new Date().getTime();
+        var merge_arr = merge_sort(arr.slice());
+        endTime = new Date().getTime();
+        var merge_avg_time = endTime - startTime;
+
+        
+        alert('selection avg_time = '+ (selection_avg_time/1000.0) + 
+            '\n'+'bubble avg_time = '+ (bubble_avg_time/1000.0) +
+            '\n'+'insertion avg_time = '+ (insertion_avg_time/1000.0) + 
+            '\n'+'merge avg_time = '+ (merge_avg_time/1000.0));
+            
+
+        startTime = new Date().getTime();
+        selection_sort(selection_arr);
+        endTime = new Date().getTime();
+        var selection_best_time = endTime - startTime;
+
+        startTime = new Date().getTime();
+        bubble_sort(bubble_arr);
+        endTime = new Date().getTime();
+        var bubble_best_time = endTime - startTime;
+
+        startTime = new Date().getTime();
+        insertion_sort(insertion_arr);
+        endTime = new Date().getTime();
+        var insertion_best_time = endTime - startTime;
+
+        startTime = new Date().getTime();
+        merge_sort(merge_arr);
+        endTime = new Date().getTime();
+        var merge_best_time = endTime - startTime;
+
+        
+        alert('selection best_time = ' + (selection_best_time/1000.0) +
+            '\n' + 'bubble best_time = ' + (bubble_best_time/1000.0) +
+            '\n' + 'insertion best_time = ' + (insertion_best_time/1000.0) +
+            '\n' + 'merge best_time = ' + (merge_best_time/1000.0));
+            
+
+        var reverse_arr = selection_arr.reverse();
+
+        startTime = new Date().getTime();
+        selection_sort(reverse_arr.slice());
+        endTime = new Date().getTime();
+        var selection_worst_time = endTime - startTime;
+
+        startTime = new Date().getTime();
+        bubble_sort(reverse_arr.slice());
+        endTime = new Date().getTime();
+        var bubble_worst_time = endTime - startTime;
+
+        startTime = new Date().getTime();
+        insertion_sort(reverse_arr.slice());
+        endTime = new Date().getTime();
+        var insertion_worst_time = endTime - startTime;
+
+        startTime = new Date().getTime();
+        merge_sort(reverse_arr.slice());
+        endTime = new Date().getTime();
+        var merge_worst_time = endTime - startTime;
+
+        
+        alert('selection worst_time = ' + (selection_worst_time/1000.0) +
+            '\n' + 'bubble worst_time = ' + (bubble_worst_time/1000.0) +
+            '\n' + 'insertion worst_time = ' + (insertion_worst_time/1000.0) +
+            '\n' + 'merge worst_time = ' + (merge_worst_time/1000.0));
+            
+
+    </script>
+</head>
+<body>
+</body>
+</html>

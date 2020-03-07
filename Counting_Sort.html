@@ -1,0 +1,30 @@
+<html>
+<head>
+    
+    <title></title>
+    <script>
+        var Counting_Sort = function(array, k) {
+            var count = [], result = [];
+            for (var i = 0; i <= k; i++) {   // 모든 숫자의 갯수를 0으로 초기화
+                count[i] = 0;
+            }
+            for (var j = 0; j < array.length; j++) {  // 숫자의 갯수를 세어 저장
+                count[array[j]] += 1;
+            }
+            for (i = 0; i < k; i++) {  // 누적합을 구한다.
+                count[i+1] += count[i];
+            }
+            for (j = 0; j < array.length; j++) {  // 누적합이 가리키는 인덱스를 바탕으로 결과에 숫자를 집어넣는다.
+                
+                result[count[array[j]] - 1] = array[j];  
+                count[array[j]] -= 1;
+            }
+            return result;
+        }
+        alert(Counting_Sort([3,2,1,1,6,3,2], 6));
+
+    </script>
+</head>
+<body>
+</body>
+</html>

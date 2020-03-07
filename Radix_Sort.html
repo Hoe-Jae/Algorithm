@@ -1,0 +1,36 @@
+<html>
+<head>
+    
+    <title></title>
+    <script>
+        var counter = [[]];
+        
+        var radixSort = function (array, d) {  // d : 가장 큰 데이터의 자릿수
+            var mod = 10;
+            for (var i = 0; i < d; i++, mod *= 10) {  // mod는 현재 정렬 중인 자릿수
+                for (var j = 0; j < array.length; j++) {
+                    var bucket = array[j] % mod;
+                    if (counter[bucket] == null) {
+                        counter[bucket] = [];
+                    }
+                    counter[bucket].push(array[j]); // 나머지 별로 묶는다.
+                }
+                var pos = 0;
+                for (var j = 0; j < counter.length; j++) {  // counter에 저장된 묶음들(나머지 순서로 정렬됨)을 실제 배열에 반영
+                    var value = null;
+                    if (counter[j] != null) {
+                        while ((value = counter[j].shift()) != null) {
+                            array[pos++] = value;
+                        }
+                    }
+                }
+            }
+            return array;
+        }
+        alert(radixSort([24,3,15,2,14,22,4,30],2));
+
+    </script>
+</head>
+<body>
+</body>
+</html>

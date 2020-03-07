@@ -1,0 +1,99 @@
+<html>
+<head>
+    
+    <title></title>
+    <script>
+        var Heap = (function() {
+            function Heap() {
+                this.arr = [];
+            }
+            function HeapUp(self, idx) {
+                if (idx) {
+                    var parent = parseInt((idx - 1)/2);
+                    if (self.arr[idx] > self.arr[parent]) {  // 자식 노드가 부모 노드보다 크면
+                        var temp = self.arr[idx];            // 서로 바꿔준다.
+                        self.arr[idx] = self.arr[parent];
+                        self.arr[parent] = temp;
+                        HeapUp(self, parent);
+                    }
+                }
+            }
+            function HeapDown(self, idx) {
+                var left = 0;
+                var right = 0;
+                var large;
+                if(idx * 2 + 1 < self.arr.length ) {
+                    left = self.arr[idx * 2 + 1];
+                    if (idx * 2 + 2 < self.arr.length ) {
+                        right = self.arr[idx * 2 + 2];
+                    }
+                    if (left > right) {
+                        large = idx * 2 + 1;
+                    }
+                    else {
+                        large = idx * 2 + 2;
+                    }
+
+                    if (self.arr[idx] < self.arr[large]) {
+                        var temp = self.arr[idx];
+                        self.arr[idx] = self.arr[large];
+                        self.arr[large] = temp;
+                        HeapDown(self, large);
+                    }
+                }
+            }
+
+            function SetArray(self, arr){
+                for(i=0; i<arr.length;i++){
+                    self.insert(arr[i]);
+                }
+            }
+            
+            Heap.prototype.insert = function(number) {
+                var last = this.arr.length;
+                this.arr[last] = number;
+                HeapUp(this, last);
+                return true;
+            }
+            Heap.prototype.delete = function() {
+                if (this.arr.length == 0) {
+                    return false;
+                }
+                var del = this.arr[0];
+                this.arr[0] = this.arr.pop();
+                HeapDown(this,0);
+                return del;
+            }
+            Heap.prototype.sort = function() {
+                var sort = [];
+                var count = this.arr.length;
+                for (var i = 0; i < count; i++) {
+                    sort.push(this.delete());
+                    
+                }
+                return sort;
+            }
+            return Heap;
+        })();
+
+        var h = new Heap();
+        h.insert(24);
+        h.insert(12);
+        h.insert(3);
+        h.insert(4);
+        h.insert(37);
+        h.insert(14);
+        h.insert(8);
+        h.insert(1);
+        h.insert(27);
+        h.insert(58);
+        h.insert(41);
+
+        alert(h.sort());
+    
+
+    </script>
+</head>
+<body>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<html>
+<head>
+    
+    <title></title>
+    <script>
+        var partition = function(array, left, right, pivotIndex) { // 정렬
+            var temp;
+            var pivot = array[pivotIndex];
+            while (left <= right) {  // 왼쪽, 오른쪽 수를 규칙과 비교해 다음 수로 넘어간다.
+                while (array[left] < pivot) {
+                    left++;
+                }
+                while (array[right] > pivot) {
+                    right--;
+                }
+                if (left <= right) {  // 왼쪽이 기준보다 크고, 오른쪽이 기준보다 작으면  
+                    temp = array[left];
+                    array[left] = array[right];
+                    array[right] = temp;  // 서로 바꿔준다.
+                    left++;
+                    right--;
+                }
+            }
+            temp = array[left];
+            array[left] = array[pivotIndex];
+            array[pivotIndex] = temp;  // 마지막으로 기준과 만난 수를 바꾼다. 기준의 위치는 이제 i 
+            return left;
+        }
+
+        var Quick_Sort = function(array,left,right) {  // 재귀
+            if(!left) {  // left에 값이 없는 경우 0 으로 초기화
+                left = 0;
+            }
+            if(!right) {
+                right = array.length -1;
+            }
+            var pivotIndex = right;  // 배열 가장 오른쪽의 수를 기준으로 뽑는다.
+            pivotIndex = partition(array, left, right - 1, pivotIndex);  // right - 1 의 이유는 기준(현재 right)를 제외하고 정렬하기 위해서
+            if (left < pivotIndex - 1) {
+                Quick_Sort(array, left, pivotIndex-1);  // 가장 왼쪽 부분 재귀
+            }
+            if (pivotIndex + 1 < right) {
+                Quick_Sort(array, pivotIndex + 1, right);  // 가장 오른쪽 부분 재귀
+            }
+            return array;
+        }
+        
+        alert(Quick_Sort([4,3,6,10,2,28,25]));
+        
+
+    </script>
+</head>
+<body>
+</body>
+</html>

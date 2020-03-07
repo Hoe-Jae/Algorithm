@@ -1,0 +1,227 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <script>
+        
+        var Node = function(data) {
+
+            this.data = data;
+            this.left = null;
+            this.right = null;
+            this.parent = null;
+            this.depth = 0;
+            
+            return this;
+        }
+
+        var BST = function() {
+
+            this.root;
+            this.sorted_arr='';
+            this.depth = 0;
+
+            BST.prototype.insert = function(data) {
+
+                var newNode = new Node(data);
+                if(this.root == null) {  // root가 비어있으면 root에 삽입
+                    this.root = newNode;
+                } 
+                else {
+                    this.insertNode(this.root, newNode);
+                }
+            }
+                
+            BST.prototype.insertNode =  function(node, newNode){
+
+                if(newNode.data < node.data) {  // 삽입할 값이 기준 node보다 작으면
+                    if(node.left == null) {  // 기준 node의 왼쪽자식이 없으면
+                        newNode.parent = node;
+                        node.left = newNode;  // 그 자리에 삽입
+                        this.calcDepth(newNode);
+                    } else {  // 기준 node의 왼쪽 자식이 있으면
+                        return this.insertNode(node.left, newNode); // 기준 node의 왼쪽 자식을 기준으로 다시 함수 실행
+                    }
+                } else {  // 삽입할 값이 기준 node보다 크면
+                    if(node.right == null) {
+                        newNode.parent = node;
+                        node.right = newNode;
+                        this.calcDepth(newNode);
+                    } else {
+                        return this.insertNode(node.right, newNode);
+                    }
+                }
+
+            }
+
+            BST.prototype.delete = function(data) {
+                this.deleteNode(this.root, data);
+            }
+
+            BST.prototype.deleteNode = function(node, data) {
+                
+                if(data == node.data) {  // 삭제할 값이 기준 node와 같으면
+                    if(node.left == null && node.right == null) {  // 자식이 없을 때
+                        if(node.data == node.parent.left.data) {
+                            node.parent.left = null;
+                        }
+                        else {
+                            node.parent.right = null;
+                        }
+                        node = null;
+                    }
+                    else if(node.left == null) {  // 자식이 1개일 때
+                        node.data = node.right.data;
+                        node.right = null;
+                    }
+                    else if(node.right == null) {
+                        node.data = node.left.data;
+                        node.left = null;
+                    }
+                    else {
+                    var temp = this.getSmallest(node.right);  // 자식이 2개일 때
+                    node.data = temp.data;
+                    this.deleteNode(node.right, temp.data);
+                    
+                    }
+                }
+                else if(data < node.data) {
+                    this.deleteNode(node.left, data);
+                    
+                }
+                else {
+                    this.deleteNode(node.right, data);
+                    
+                }
+            }
+
+            BST.prototype.getSmallest = function(node) {  // 서브트리에서 가장 작은 값 찾기
+                var current = node;
+                while(!(current.left == null)) {
+                    current = current.left;
+                }
+                return current;
+            }
+
+            BST.prototype.find = function(data) {
+                let current = this.root;
+                while(current.data != data) {
+                    if(data < current.data) {
+                        current = current.left;
+                    } else {
+                        current = current.right;
+                    }
+                    if(current == null) {
+                        return null;
+                    }
+                }
+                return current;
+            }
+
+            BST.prototype.inorder = function(node) {  // 중위 순회(왼쪽 자식 노드 -> 현재 노드 -> 오른쪽 자식 노드)
+                if (node.left != null){
+                    this.inorder(node.left);
+                }
+                this.sorted_arr += node.data + ' ';
+
+                if (node.right != null){
+                    this.inorder(node.right);
+                }
+            }
+
+            BST.prototype.getRootNode = function() {
+                return this.root;
+            }
+
+            BST.prototype.calcDepth = function(node) {  // node의 depth 구하기
+
+                if (node != null){
+
+                    if (node.parent != null){
+                        node.depth = node.parent.depth + 1;
+                        if (node.depth > this.depth){
+                            this.depth = node.depth;
+                        }
+                    }
+                    else{
+                        node.depth = 0;
+                    }
+                    
+                    if (node.left != null){
+                        this.calcDepth(node.left);
+                    } 
+
+                    if (node.right != null){
+                        this.calcDepth(node.right);
+                    }
+                }
+            }
+
+            BST.prototype.printHelper = function(node, arr){  // tree의 형태로 출력
+                
+                if (node.left != null){
+                    this.printHelper(node.left, arr);
+                }
+                for (var i = 0; i <= this.depth; i++)
+                {
+                    if (i == node.depth){
+                        var tmp = ['(','','',')'];
+                        tmp[1] = String(parseInt(node.data / 10));
+                        tmp[2] = String(node.data % 10);
+                        
+                        for (var j = 0; j < tmp.length; j++){
+                            arr[i] += tmp[j];
+                        }
+                    }
+
+                    else{
+                        arr[i] += '    ';
+                    }
+                }
+
+                if (node.right != null){
+                    this.printHelper(node.right, arr);
+                }
+            }
+
+            BST.prototype.print = function() {
+                var arr = new Array(this.depth + 1);
+                for (var i = 0; i < arr.length; i++){
+                    arr[i] = '';
+                }
+                this.printHelper(this.root,arr);
+
+                var output = '';
+                for (i = 0; i < arr.length; i++){
+                    output += arr[i] + '\n';
+                }
+                return output;
+            }
+
+            return this;
+        };
+
+        var bst = new BST();
+
+        bst.insert(15);
+        bst.insert(25); 
+        bst.insert(10);
+        bst.insert(7);
+        bst.insert(22);
+        bst.insert(17);
+        bst.insert(13);
+        bst.insert(5);
+        bst.insert(9);
+        bst.insert(27);
+
+        alert(bst.print());  
+        bst.delete(7);
+        alert(bst.print());
+        
+
+
+    </script>
+</head>
+<body>
+</body>
+</html>
