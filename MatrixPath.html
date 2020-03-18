@@ -1,0 +1,32 @@
+<html>
+<head>
+    
+    <title></title>
+    <script>
+        var m = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]];
+        var c = [[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0]];
+
+        var MatrixPath = function(i,j) {
+            
+            if(i == 0 && j == 0) {
+                c[i][j] = m[i][j];
+            }
+            else if(i == 0) {
+                c[i][j] = MatrixPath(i, j-1) + m[i][j];
+            }
+            else if(j == 0) {
+                c[i][j] =  MatrixPath(i-1, j) + m[i][j];
+            }
+            else {
+                c[i][j] =  Math.max(MatrixPath(i-1, j), MatrixPath(i, j-1)) + m[i][j];
+            }
+            return c[i][j];
+        }
+        alert(MatrixPath(3,3));
+        //alert(m[0][0]);
+
+    </script>
+</head>
+<body>
+</body>
+</html>

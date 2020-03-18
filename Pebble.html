@@ -1,0 +1,113 @@
+<html>
+<head>
+    
+    <title>자바스크립트 실습</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+</head>
+<body>
+
+    <style>
+        .tbPBOFF { background-color : white }
+        .tbPBON { background-color : #FF000040 }
+    </style>
+
+    <script> 
+
+        var map = new Array(8);
+        var on = new Array(8);
+        var q = [[1, 2], [0, 2, 3], [0, 1], [1]];
+
+        function Pebble(n){
+
+            var w = new Array(n);
+            for(var i = 0; i < n; i++){
+                w[i] = [map[i][0], map[i][1], map[i][2], map[i][0] + map[i][2]];
+            }
+
+            var peb = new Array(n);
+            peb[0] = w[0];
+
+            for(i = 1; i < n; i++){
+                peb[i] = [0,0,0,0];
+                on[i] = [0,0,0,0];
+                for(var p = 0; p < 4; p++){
+                    var tmp = -999;
+                    for(var j = 0; j < q[p].length; j++){
+                        if (tmp < peb[i-1][q[p][j]]){
+                            tmp = peb[i-1][q[p][j]];
+                            on[i][p] = q[p][j];
+                        }
+                    }
+                    peb[i][p] = tmp + w[i][p];
+                }
+            }
+            return [Math.max.apply(null, peb[n-1]), peb[n-1].indexOf(Math.max.apply(null, peb[n-1]))];
+        };
+
+        function btnRun(){
+            for(var i = 0; i < 8; i++){
+                map[i] = [ parseInt(document.getElementById("tb1" + String(i+1)).value), parseInt(document.getElementById("tb2" + String(i+1)).value), parseInt(document.getElementById("tb3" + String(i+1)).value)]
+            }
+
+            var max_value = Pebble(8);
+            document.getElementById("taOutput").value = max_value[0];
+
+            $(document).ready(function() {
+
+                for(var i = 0; i < 8; i++){
+                    $("#tb1"+String(i+1)).removeClass("tbPBON");
+                    $("#tb2"+String(i+1)).removeClass("tbPBON");
+                    $("#tb3"+String(i+1)).removeClass("tbPBON");
+                }
+
+                if(max_value[1] == 3){  // max_value[1] 이 왜 마지막 열을 의미?
+                    $("#tb18").addClass("tbPBON");
+                    $("#tb38").addClass("tbPBON");
+                }
+                else{
+                    $("#tb"+String(max_value[1]+1)+"8").addClass("tbPBON");
+                }
+                
+                var tmp = max_value[1]
+                for(var i = 7; i > 0; i--){
+                    if(on[i][tmp] == 3){
+                        $("#tb1"+String(i)).addClass("tbPBON");
+                        $("#tb3"+String(i)).addClass("tbPBON");
+                    }
+                    else{
+                        $("#tb"+String(on[i][tmp]+1)+String(i)).addClass("tbPBON");
+                    }
+                    tmp = on[i][tmp];
+                }
+            })
+            
+        }
+
+    </script>
+
+    <h1>Pebble Table 
+        <button id='btRun' onClick="btnRun();"> Run </button> 
+        <textarea name="pebble_output" id="taOutput" rows=1 cols=10 readonly></textarea>
+    </h1>
+
+    <table>
+
+        <tr>
+            <td><input type="text", id="tb11", size=1/></td> <td><input type="text", id="tb12", size=1/></td> <td><input type="text", id="tb13", size=1/></td> <td><input type="text", id="tb14", size=1/></td>
+            <td><input type="text", id="tb15", size=1/></td> <td><input type="text", id="tb16", size=1/></td> <td><input type="text", id="tb17", size=1/></td> <td><input type="text", id="tb18", size=1/></td>
+        </tr>
+
+        <tr>
+            <td><input type="text", id="tb21", size=1/></td> <td><input type="text", id="tb22", size=1/></td> <td><input type="text", id="tb23", size=1/></td> <td><input type="text", id="tb24", size=1/></td>
+            <td><input type="text", id="tb25", size=1/></td> <td><input type="text", id="tb26", size=1/></td> <td><input type="text", id="tb27", size=1/></td> <td><input type="text", id="tb28", size=1/></td>
+        </tr>
+
+        <tr>
+            <td><input type="text", id="tb31", size=1/></td> <td><input type="text", id="tb32", size=1/></td> <td><input type="text", id="tb33", size=1/></td> <td><input type="text", id="tb34", size=1/></td>
+            <td><input type="text", id="tb35", size=1/></td> <td><input type="text", id="tb36", size=1/></td> <td><input type="text", id="tb37", size=1/></td> <td><input type="text", id="tb38", size=1/></td>
+        </tr>
+
+    </table>
+</body>
+</html>
